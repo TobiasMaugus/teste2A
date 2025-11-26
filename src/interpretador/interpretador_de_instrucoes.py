@@ -86,6 +86,23 @@ def decode_instruction(instr_bits: str) -> dict:
         "const16": int(const16, 2)
     }
 
+def save_program_binary(text_path: str, bin_path: str) -> None:
+    """
+    Lê arquivo de instruções em texto (com notação 'address' e binárias)
+    e salva em formato binário compacto na pasta bin/.
+    
+    Formato binário: cada instrução é salva como 4 bytes (32 bits).
+    """
+    mem = parse_program(text_path)
+    
+    with open(bin_path, "wb") as f:
+        # Salva instruções ordenadas por endereço
+        for addr in sorted(mem.keys()):
+            instr_bits = mem[addr]
+            instr_int = int(instr_bits, 2)
+            # Escreve como 4 bytes (big-endian)
+            f.write(instr_int.to_bytes(4, byteorder='big'))
+
 # exemplo de uso:
 # mem = parse_program("binarios/programa.txt")
 # instr = decode_instruction(mem[0])
