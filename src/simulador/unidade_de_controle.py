@@ -2,13 +2,21 @@
 # Orquestra IF, ID, EX/MEM, WB em quatro rotinas por instrução
 # Usa interpretador_de_instrucoes, memoria, banco_de_registradores, alu
 
-from src.interpretador.interpretador_de_instrucoes import parse_program, decode_instruction, INSTRUCOES
+from src.interpretador.interpretador_de_instrucoes import parse_program, asm_to_binary, decode_instruction
 from src.simulador.memoria import Memoria
 from src.simulador.banco_de_registradores import RegisterFile
 import src.simulador.alu as alu
+import os
 
 class CPU:
     def __init__(self, program_path):
+        # Se for .txt (assembly), converte para .bin
+        if program_path.endswith(".txt"):
+            bin_path = os.path.join("bin", os.path.basename(program_path).replace(".txt", ".bin"))
+            os.makedirs("bin", exist_ok=True)
+            asm_to_binary(program_path, bin_path)
+            program_path = bin_path
+        
         self.mem = Memoria()
         parsed = parse_program(program_path)
         self.mem.load_program(parsed)
